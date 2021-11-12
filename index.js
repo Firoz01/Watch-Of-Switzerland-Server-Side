@@ -39,7 +39,6 @@ async function run() {
 
     app.get('/products/:id', async (req, res) => {
       const id = req.params.id;
-      console.log(id);
       const query = { _id: ObjectId(id) };
       const product = await productsCollection.findOne(query);
       res.json(product);
@@ -53,7 +52,6 @@ async function run() {
 
     app.get('/orders/:email', async (req, res) => {
       const email = req.params.email;
-      console.log(email);
       const query = { email: email };
       const order = await ordersCollection.find(query).toArray();
       res.json(order);
@@ -96,6 +94,36 @@ async function run() {
        );
        res.json(result);
      });
+    
+    app.put('/users/admin', async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const updateDoc = { $set: { role: "admin" } };
+      const result = await usersCollection.updateOne(filter, updateDoc);
+      res.json(result);
+    })
+
+
+    app.put('/orders/status', async (req, res) => {
+      const statusId = req.body.id;
+      let status = req.body.status;
+      if (status === 'pending') {
+        status = 'shipped'
+      } else {
+        status = 'pending'
+      }
+      const filter = { _id: ObjectId(statusId) };
+      const options = { upsert: true };
+
+      const updateDoc = { $set: { status: status } };
+
+      const result = await ordersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    })
 
     app.post('/order', async (req, res) => {
       const order = req.body;

@@ -52,9 +52,10 @@ async function run() {
     })
 
     app.get('/orders/:email', async (req, res) => {
-      const email = req.query.email;
+      const email = req.params.email;
+      console.log(email);
       const query = { email: email };
-      const order = await ordersCollection.findOne(query).toArray();
+      const order = await ordersCollection.find(query).toArray();
       res.json(order);
     })
 
@@ -99,7 +100,6 @@ async function run() {
     app.post('/order', async (req, res) => {
       const order = req.body;
       Object.assign(order, { status: "pending" });
-      console.log(order);
       const result = await ordersCollection.insertOne(order);
       res.json(result);
     })
@@ -111,6 +111,12 @@ async function run() {
       res.json(result);
     });
 
+    app.delete('/orders/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await ordersCollection.deleteOne(query);
+      res.json(result);
+    })
 
     }
     finally {

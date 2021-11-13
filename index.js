@@ -74,6 +74,12 @@ async function run() {
        res.json({ admin: isAdmin });
      });
 
+    app.post('/products', async (req, res) => {
+      const product = req.body;
+      const result = await productsCollection.insertOne(product);
+      res.json(result);
+    })
+    
     app.post('/user', async (req, res) => {
       const user = req.body;
       const result = await usersCollection.insertOne(user);
@@ -143,6 +149,13 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const result = await ordersCollection.deleteOne(query);
+      res.json(result);
+    })
+
+    app.delete('/products/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(query);
       res.json(result);
     })
 
